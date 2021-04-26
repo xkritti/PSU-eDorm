@@ -5,11 +5,12 @@ import { Container } from 'reactstrap';
 const Admin = () => {
     return (
         <div>
-            <Navbar name="Electicity bill For Dromitory" />
-            <Container style={{ flex: 'dispaly', alignItems: 'center', justifyContent: 'center', height: "83vh" }}>
+            <Navbar name="Electricity Bill Management" />
+            <Container>
                 <h1>Admin Page</h1>
-            </Container >
-        </div >
+                <h1>Your Admin</h1>
+            </Container>
+        </div>
 
 
     )

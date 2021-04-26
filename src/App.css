@@ -33,7 +33,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 63.5vh;
+  min-height: 60.5vh;
+  margin-bottom: 9px;
 }
 .App-footer {
   background-color: darkblue;

@@ -1,10 +1,12 @@
 const config = {
-  apiKey: "AIzaSyBPzYNdvcpvyRl_HQGn9dWXe_89Ai3W23Y",
-  authDomain: "psu-edrom.firebaseapp.com",
-  projectId: "psu-edrom",
-  storageBucket: "psu-edrom.appspot.com",
-  messagingSenderId: "163621524929",
-  appId: "1:163621524929:web:880a4c5bfffa2841b74b40"
+  apiKey: "AIzaSyBwVUlxJo51FuYeyoOE9fSC01md-NqHqF0",
+  authDomain: "psu-dorm-electricity-bil-caf7e.firebaseapp.com",
+  databaseURL: "https://psu-dorm-electricity-bil-caf7e.firebaseio.com",
+  projectId: "psu-dorm-electricity-bil-caf7e",
+  storageBucket: "psu-dorm-electricity-bil-caf7e.appspot.com",
+  messagingSenderId: "790357918006",
+  appId: "1:790357918006:web:be7bf3c66ca4182229f397",
+  measurementId: "G-RRRG3M2185"
 };
 
 export default config;
