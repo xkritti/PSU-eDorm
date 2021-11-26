@@ -263,13 +263,39 @@ const Agent = () => {
                   onChange={async (event) => {
                     setpic(event.target.files[0]);
                     console.log(picRef.current);
-                    const db = new FormData();
-                    db.append("image", picRef.current, picRef.current.name);
-                    const res = await axios.post(
-                      `https://ocrxfastapi.herokuapp.com/upload_to_orc_upload_to_orc_post`,
-                      db
-                    );
-                    console.log(res)
+                    console.log(picRef.current.name);
+                    var db = new FormData();
+                    db.append("file", picRef.current, picRef.current.name);
+                    var config = {
+                      method: "post",
+                      url: "https://ocrxfastapi.herokuapp.com/upload_to_orc",
+                      headers: {
+                        accept: "application/json",
+                        "Content-Type": "multipart/form-data",
+                      },
+                      data: db,
+                    };
+                    const res = await axios(config);
+                    // const res = await axios.post(
+                    //   `https://ocrxfastapi.herokuapp.com/upload_to_orc_upload_to_orc_post`,
+                    //   db,
+                    //   {
+                    //     headers: {
+                    //       'content-type': 'multipart/form-data'
+                    //     },
+                    //   }
+                    // );
+                    var x = res.data["data"];
+                    console.log(x);
+                    setunit(parseInt(x["unit"]));
+                    console.log(unitRef.current);
+                    if (res.data["msg"] == '"success!!"') {
+                      alert(res.data["msg"]);
+                      toggle();
+                    } else {
+                      alert(res.data["msg"]);
+                      toggle();
+                    }
                   }}
                 />
                 <Button
