@@ -269,6 +269,7 @@ const Agent = () => {
                       `https://ocrxfastapi.herokuapp.com/upload_to_orc_upload_to_orc_post`,
                       db
                     );
+                    console.log(res)
                   }}
                 />
                 <Button
