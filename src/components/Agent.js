@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import useState from "react-usestateref";
 import {
   Container,
   Form,
@@ -17,6 +18,7 @@ import {
 import Navbar from "./Appbar";
 import { firestore } from "../index";
 import firebase from "firebase/app";
+import axios from "axios";
 
 const Agent = () => {
   const [tempfloor, settempfloor] = useState([
@@ -63,20 +65,52 @@ const Agent = () => {
   const Add2 = temproom.map((Add2) => Add2);
   const handleroomChange = (e) => setroom(temproom[e.target.value]);
 
-  const [floor, setfloor] = useState(null);
-  const [room, setroom] = useState(null);
-  const [date, setdate] = useState(null);
-  const [unit, setunit] = useState(null);
+  const [floor, setfloor, floorRef] = useState(null);
+  const [room, setroom, roomRef] = useState(null);
+  const [date, setdate, dateRef] = useState(null);
+  const [unit, setunit, unitRef] = useState(null);
+  const [pic, setpic, picRef] = useState();
 
-  const createBillList = () => {
-    firestore
+  const createBillList = async () => {
+    const sDate = date.split("-");
+    const yy = sDate[0];
+    const mm = sDate[1];
+    const dd = sDate[2];
+    const ddmmyy = `${dd}-${mm}-${yy}`;
+    const mmyy = `${mm}-${yy}`;
+    let _room = `${floor}${room}`;
+
+    // Add a new document in collection "cities" with ID 'LA'
+
+    const data = {
+      room: _room,
+      unit: unit * 1,
+      cash: unit * 5,
+      payment: mmyy,
+      date: ddmmyy,
+    };
+    await firestore
       .collection("BillList")
-      .doc(room + floor + "")
-      .set({
-        date: date,
-        unit: unit,
-        cash: unit * 5,
+      .doc()
+      .set(data)
+      .catch((err) => {
+        console.log(err);
+        return false;
       });
+    return true;
+    // const db = firestore.collection("BillList").doc("test");
+    // db.set(data).catch((err) => {
+    //   console.log(err);
+    //   return false;
+    // });
+    // db.doc(mmyy)
+    //   .collection(_room)
+    //   .doc(ddmmyy)
+    //   .set(data)
+    //   .catch((err) => {
+    //     alert(err);
+    //     return false;
+    //   });
   };
 
   const [modal, setModal] = useState(false);
@@ -174,20 +208,22 @@ const Agent = () => {
             </FormGroup>
             <Button
               color="success"
-              onClick={() => {
+              onClick={async () => {
                 if (
                   floor != null &&
                   room != null &&
                   date != null &&
                   unit != null
                 ) {
-                  createBillList();
-                  setTimeout(() => {
-                    alert("susscess");
+                  const res = await createBillList();
+                  if (res) {
+                    alert("บันทึกข้อมูลสำเร็จ");
                     window.location.reload();
-                  }, 1500);
+                  } else {
+                    alert("error ! : โปรดลองใหม่อีกครั้ง");
+                  }
                 } else {
-                  alert("error !");
+                  alert("error ! : โปรดกรอกข้อมูลให้ครบถ้วน");
                   console.log("err");
                 }
               }}
@@ -222,7 +258,26 @@ const Agent = () => {
                 </Card>
               </ModalBody>
               <Card>
-                <Button color="primary" onClick={toggle}>
+                <input
+                  type="file"
+                  onChange={async (event) => {
+                    setpic(event.target.files[0]);
+                    console.log(picRef.current);
+                    const db = new FormData();
+                    db.append("image", picRef.current, picRef.current.name);
+                    const res = await axios.post(
+                      `https://ocrxfastapi.herokuapp.com/upload_to_orc_upload_to_orc_post`,
+                      db
+                    );
+                  }}
+                />
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    console.log("Click and go use camera or update pic !");
+                    // toggle
+                  }}
+                >
                   Scan
                 </Button>
                 <Button color="danger" onClick={toggle}>
