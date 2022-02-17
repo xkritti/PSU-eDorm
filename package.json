@@ -4,7 +4,7 @@
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "index.js",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.2",
     "bootstrap": "^4.6.0",
     "firebase": "^7.14.2",
     "firebase-tools": "^8.2.0",
