@@ -7,6 +7,15 @@ import Navbar from "./Appbar";
 import { firestore } from "../index";
 import firebase from "firebase";
 import { CSVLink } from "react-csv";
+import Input from "reactstrap/lib/Input";
+import {
+  Label,
+  Row,
+  DropdownItem,
+  DropdownMenu,
+  Dropdown,
+  DropdownToggle,
+} from "reactstrap";
 
 const AgentBill = () => {
   const login = useSelector((state) => state.login);
@@ -19,7 +28,8 @@ const AgentBill = () => {
     { label: "Unit", key: "unit" },
     { label: "Fee", key: "cash" },
   ];
-
+  var [modal, setModal, dataRefModal] = useState(false);
+  const toggle = () => setModal(!modal);
   const test_getdata = async () => {
     let me = new Date();
     let mmyy = `${me.getMonth() + 1}-${me.getFullYear()}`;
@@ -66,17 +76,35 @@ const AgentBill = () => {
       <Navbar name="Electricity Bill Management" />
       <div className="App">
         <h1>AgentBill</h1>
-        <CSVLink {...csvReport}>Export to CSV</CSVLink>
+        <Row
+          style={{
+            justifyContent: "space-evenly",
+            alignItems: "center",
+          }}
+        >
+          <CSVLink {...csvReport}>Export to CSV</CSVLink>
+          <Dropdown direction="end" toggle={toggle} isOpen={modal}>
+            <DropdownToggle caret>Filter by</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem>วันที่</DropdownItem>
+              <DropdownItem>ห้อง</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </Row>
+
+        <Container
+          style={{
+            width: "30vh",
+          }}
+        ></Container>
         <Container
           style={{
             display: "flex",
             flexDirection: "column",
-            // justifyContent: "center",
-            // alignItems: "center",
             height: "79.5vh",
           }}
         >
-          <Table>
+          <Table striped>
             <thead>
               <tr>
                 <th>Payment</th>

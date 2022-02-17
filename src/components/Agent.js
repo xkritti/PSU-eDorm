@@ -19,6 +19,7 @@ import Navbar from "./Appbar";
 import { firestore } from "../index";
 import firebase from "firebase/app";
 import axios from "axios";
+import ReactLoading from "react-loading";
 
 const Agent = () => {
   const [tempfloor, settempfloor] = useState([
@@ -34,7 +35,6 @@ const Agent = () => {
   ]);
   const Add1 = tempfloor.map((Add1) => Add1);
   const handlefloorChange = (e) => setfloor(tempfloor[e.target.value]);
-
   const [temproom, settemproom] = useState([
     null,
     1,
@@ -70,6 +70,14 @@ const Agent = () => {
   const [date, setdate, dateRef] = useState(null);
   const [unit, setunit, unitRef] = useState(null);
   const [pic, setpic, picRef] = useState();
+  const [scanstatus, setscanstatus, scanstatusRef] = useState(false);
+  // unitformscan
+  const [unitformscan, setunitformscan, unitformscanRef] = useState(null);
+  const [roomscan, setroomscan, roomscanRef] = useState(null);
+  const [floorscan, setfloorscan, floorscanRef] = useState(null);
+  const [datescan, setdatescan, datescanRef] = useState(null);
+  const [focusdate, setfocusdate, focusdateRef] = useState(false);
+  const [loadmodal, setloadmodal, loadmodalRef] = useState(false);
 
   const createBillList = async () => {
     const sDate = date.split("-");
@@ -133,10 +141,14 @@ const Agent = () => {
           }}
         >
           <h3>จดบันทึกวันที่ {date}</h3>
-          <p>
-            Room : {floor}
-            {room} Use {unit} Unit
-          </p>
+          {unit == null ? (
+            <p>Room :</p>
+          ) : (
+            <p>
+              Room : {floor}
+              {room} จดได้ {unit} Unit
+            </p>
+          )}
           <hr />
           <Form
             style={{
@@ -146,25 +158,84 @@ const Agent = () => {
               width: "400px",
             }}
           >
-            <Input
-              type="date"
-              style={{ marginBottom: "10px" }}
-              onChange={(e) => {
-                setdate(e.target.value);
-                console.log(e.target.value);
-              }}
-            ></Input>
+            <FormGroup row>
+              <Label for="FloorFormControlSelect" sm={2}>
+                {" "}
+                วันที่
+              </Label>
+              <Col>
+                {datescan != null ? (
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      color: "green",
+                    }}
+                  >
+                    ข้อมูลจากการแสกน : {date}
+                  </p>
+                ) : (
+                  <p
+                    style={{
+                      fontSize: "13px",
+                    }}
+                  >
+                    {/* ข้อมูลจากการแสกน : - */}
+                  </p>
+                )}
+                <Input
+                  placeholder={date == null ? "dd/mm/yy" : date}
+                  type={focusdate ? "date" : "text"}
+                  // type="text"
+                  // onfocus={(e)=>{
+                  //   console.log(e)
+                  // }}
+                  onClick={(e) => {
+                    if (date == null) {
+                      setfocusdate(true);
+                    }
+                  }}
+                  style={{ marginBottom: "10px" }}
+                  onChange={(e) => {
+                    setdate(e.target.value);
+                    console.log(e.target.value);
+                  }}
+                />
+              </Col>
+            </FormGroup>
+
             <FormGroup row>
               <Label for="FloorFormControlSelect" sm={2}>
                 {" "}
                 Floor Select
               </Label>
+
               <Col>
+                {roomscan != null ? (
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      color: "green",
+                    }}
+                  >
+                    ข้อมูลจากการแสกน : {roomscan}
+                  </p>
+                ) : (
+                  <p
+                    style={{
+                      fontSize: "13px",
+                    }}
+                  >
+                    {/* ข้อมูลจากการแสกน : - */}
+                  </p>
+                )}
                 <select
                   class="form-control"
                   id="FloopFormControlSelect"
                   onChange={(e) => handlefloorChange(e)}
                 >
+                  <option hidden value="">
+                    {floor}
+                  </option>
                   {Add1.map((floor, key) => (
                     <option key={key} value={key}>
                       {floor}
@@ -179,12 +250,34 @@ const Agent = () => {
                 {" "}
                 Room select
               </Label>
+
               <Col>
+                {floorscan != null ? (
+                  <div
+                    style={{
+                      fontSize: "13px",
+                      color: "green",
+                    }}
+                  >
+                    ข้อมูลจากการแสกน : {floorscan}
+                  </div>
+                ) : (
+                  <p
+                    style={{
+                      fontSize: "13px",
+                    }}
+                  >
+                    {/* ข้อมูลจากการแสกน : - */}
+                  </p>
+                )}
                 <select
                   class="form-control"
                   id="RoomFormControlSelect"
                   onChange={(e) => handleroomChange(e)}
                 >
+                  <option hidden value="">
+                    {room}
+                  </option>
                   {Add2.map((temproom, key) => (
                     <option key={key} value={key}>
                       {temproom}
@@ -199,10 +292,35 @@ const Agent = () => {
                 Value{" "}
               </Label>
               <Col>
+                {unitformscan != null ? (
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      color: "green",
+                    }}
+                  >
+                    ข้อมูลจากการแสกน : {unitformscan}
+                  </p>
+                ) : (
+                  <p
+                    style={{
+                      fontSize: "13px",
+                    }}
+                  >
+                    {/* ข้อมูลจากการแสกน : - */}
+                  </p>
+                )}
+                <p></p>
                 <Input
                   type="number"
-                  placeholder="Value of Unit"
-                  onChange={(e) => setunit(e.target.value)}
+                  placeholder={unit != null ? unit : "กรุณากรอกยูนิตการใช้งาน"}
+                  onChange={(e) => {
+                    if (scanstatus == true) {
+                      e.target.value = unit;
+                      setscanstatus(!scanstatus);
+                    }
+                    setunit(e.target.value);
+                  }}
                 ></Input>
               </Col>
             </FormGroup>
@@ -235,6 +353,7 @@ const Agent = () => {
           <Button color="primary" onClick={toggle}>
             scanner {/* {buttonLabel} */}
           </Button>
+
           <Modal isOpen={modal} fade={false}>
             <Container>
               <ModalHeader
@@ -263,6 +382,14 @@ const Agent = () => {
                   onChange={async (event) => {
                     setpic(event.target.files[0]);
                     console.log(picRef.current);
+                    var date = picRef.current.lastModifiedDate;
+                    var year = date.getFullYear();
+                    var month = date.getMonth();
+                    var day = date.getDate();
+                    setdatescan(`${year}-${month + 1}-${day}`);
+                    setdate(`${year}-${month + 1}-${day}`);
+                    console.log(`${year}-${month + 1}-${day}`);
+
                     console.log(picRef.current.name);
                     var db = new FormData();
                     db.append("file", picRef.current, picRef.current.name);
@@ -275,6 +402,7 @@ const Agent = () => {
                       },
                       data: db,
                     };
+                    setloadmodal(true);
                     const res = await axios(config);
                     // const res = await axios.post(
                     //   `https://ocrxfastapi.herokuapp.com/upload_to_orc_upload_to_orc_post`,
@@ -286,11 +414,19 @@ const Agent = () => {
                     //   }
                     // );
                     var x = res.data["data"];
-                    console.log(x);
                     setunit(parseInt(x["unit"]));
+                    setunitformscan(parseInt(x["unit"]));
+
+                    setroomscan(x["room"].slice(0, 1));
+                    setfloorscan(parseInt(x["room"].slice(1)));
+                    setfloor(x["room"].slice(0, 1));
+                    setroom(parseInt(x["room"].slice(1)));
                     console.log(unitRef.current);
-                    if (res.data["msg"] == '"success!!"') {
-                      alert(res.data["msg"]);
+                    console.log(res.data["msg"]);
+                    if (res.data["msg"] == "success!!") {
+                      // alert(res.data["msg"]);
+                      setscanstatus(!scanstatus);
+                      setloadmodal(false);
                       toggle();
                     } else {
                       alert(res.data["msg"]);
@@ -317,6 +453,21 @@ const Agent = () => {
                   alignItems: "center",
                 }}
               ></ModalFooter>
+            </Container>
+          </Modal>
+          <Modal isOpen={loadmodal} fade={false} centered>
+            <Container
+              style={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <ReactLoading
+                type="bars"
+                color="#0000CD"
+                height={100}
+                width={100}
+              />
             </Container>
           </Modal>
         </Container>
