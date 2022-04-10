@@ -17,7 +17,6 @@ import {
 } from "reactstrap";
 import Navbar from "./Appbar";
 import { firestore } from "../index";
-import firebase from "firebase/app";
 import axios from "axios";
 import ReactLoading from "react-loading";
 
@@ -93,10 +92,24 @@ const Agent = () => {
     const data = {
       room: _room,
       unit: unit * 1,
-      cash: unit * 5,
+      cash: 0,
       payment: mmyy,
       date: ddmmyy,
     };
+
+    let temp = [];
+
+    let bf_db = await firestore.collection("BillList").get();
+    bf_db.forEach((doc) => {
+      temp.push(doc.data());
+    });
+    let result = temp.filter(
+      (doc) => doc.room == _room && doc.payment == `0${mm - 1}-${yy}`
+    );
+    if (result.length > 0) {
+      data.cash = Math.abs(unit - result[0].unit) * 5;
+    }
+
     await firestore
       .collection("BillList")
       .doc()
@@ -106,19 +119,6 @@ const Agent = () => {
         return false;
       });
     return true;
-    // const db = firestore.collection("BillList").doc("test");
-    // db.set(data).catch((err) => {
-    //   console.log(err);
-    //   return false;
-    // });
-    // db.doc(mmyy)
-    //   .collection(_room)
-    //   .doc(ddmmyy)
-    //   .set(data)
-    //   .catch((err) => {
-    //     alert(err);
-    //     return false;
-    //   });
   };
 
   const [modal, setModal] = useState(false);
