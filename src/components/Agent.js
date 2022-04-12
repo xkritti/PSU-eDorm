@@ -77,7 +77,7 @@ const Agent = () => {
   const [datescan, setdatescan, datescanRef] = useState(null);
   const [focusdate, setfocusdate, focusdateRef] = useState(false);
   const [loadmodal, setloadmodal, loadmodalRef] = useState(false);
-  const [base64, setBase64,dataBase64] = useState();
+  const [base64, setBase64,dataBase64] = useState("");
 
   const _handleReaderLoaded = (readerEvt) => {
     let binaryString = readerEvt.target.result;
