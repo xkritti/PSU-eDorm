@@ -77,6 +77,13 @@ const Agent = () => {
   const [datescan, setdatescan, datescanRef] = useState(null);
   const [focusdate, setfocusdate, focusdateRef] = useState(false);
   const [loadmodal, setloadmodal, loadmodalRef] = useState(false);
+  const [base64, setBase64,dataBase64] = useState();
+
+  const _handleReaderLoaded = (readerEvt) => {
+    let binaryString = readerEvt.target.result;
+    setBase64(btoa(binaryString))
+    console.log(dataBase64.current)
+  }
 
   const createBillList = async () => {
     const sDate = date.split("-");
@@ -95,6 +102,7 @@ const Agent = () => {
       cash: 0,
       payment: mmyy,
       date: ddmmyy,
+      images: base64,
     };
 
     let temp = [];
@@ -381,6 +389,14 @@ const Agent = () => {
                   type="file"
                   onChange={async (event) => {
                     setpic(event.target.files[0]);
+
+                    let file = event.target.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = _handleReaderLoaded
+                      reader.readAsBinaryString(file)
+                    }
+
                     console.log(picRef.current);
                     var date = picRef.current.lastModifiedDate;
                     var year = date.getFullYear();
@@ -404,15 +420,6 @@ const Agent = () => {
                     };
                     setloadmodal(true);
                     const res = await axios(config);
-                    // const res = await axios.post(
-                    //   `https://ocrxfastapi.herokuapp.com/upload_to_orc_upload_to_orc_post`,
-                    //   db,
-                    //   {
-                    //     headers: {
-                    //       'content-type': 'multipart/form-data'
-                    //     },
-                    //   }
-                    // );
                     var x = res.data["data"];
                     setunit(parseInt(x["unit"]));
                     setunitformscan(parseInt(x["unit"]));
