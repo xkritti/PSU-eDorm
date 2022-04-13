@@ -220,7 +220,9 @@ const Admin = () => {
             </ModalHeader>
             <ModalBody>
               <Container>
-                วันที่ : {roomdata["date"]} <br />
+                รอบจดบันทึก : {roomdata["payment"]} <br />
+                วันที่จดบันทึก : {roomdata["date"]} <br />
+                <br />
                 <FormGroup>
                   <Label>ปริมาณการใช้ :</Label>
                   <Input
@@ -244,8 +246,12 @@ const Admin = () => {
                     }}
                   />
                 </FormGroup>
-                <br />
-                มีรูปแสดงที่ถ่ายมาไว้เช็ค โดยโชว์ของเดือนนั้นๆ {roomdata.id}
+                รูปจดบันทึก : {" "}
+                {roomdata.image !== "" ? (
+                  <img src={roomdata.image} alt="new" />
+                ) : (
+                  <div style={{color:"red"}}> ไม่พบรูปในระบบ </div>
+                )}
               </Container>
             </ModalBody>
             <ModalFooter>

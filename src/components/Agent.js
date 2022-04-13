@@ -19,6 +19,7 @@ import Navbar from "./Appbar";
 import { firestore } from "../index";
 import axios from "axios";
 import ReactLoading from "react-loading";
+import firebase from "firebase";
 
 const Agent = () => {
   const [tempfloor, settempfloor] = useState([
@@ -77,13 +78,7 @@ const Agent = () => {
   const [datescan, setdatescan, datescanRef] = useState(null);
   const [focusdate, setfocusdate, focusdateRef] = useState(false);
   const [loadmodal, setloadmodal, loadmodalRef] = useState(false);
-  const [base64, setBase64,dataBase64] = useState("");
-
-  const _handleReaderLoaded = (readerEvt) => {
-    let binaryString = readerEvt.target.result;
-    setBase64(btoa(binaryString))
-    console.log(dataBase64.current)
-  }
+  const [base64, setBase64, dataBase64] = useState("");
 
   const createBillList = async () => {
     const sDate = date.split("-");
@@ -93,17 +88,9 @@ const Agent = () => {
     const ddmmyy = `${dd}-${mm}-${yy}`;
     const mmyy = `${mm}-${yy}`;
     let _room = `${floor}${room}`;
+    let url = "";
 
     // Add a new document in collection "cities" with ID 'LA'
-
-    const data = {
-      room: _room,
-      unit: unit * 1,
-      cash: 0,
-      payment: mmyy,
-      date: ddmmyy,
-      images: base64,
-    };
 
     let temp = [];
 
@@ -114,6 +101,24 @@ const Agent = () => {
     let result = temp.filter(
       (doc) => doc.room == _room && doc.payment == `0${mm - 1}-${yy}`
     );
+
+    if (base64 != "") {
+      const firestorage = firebase.storage();
+      await firestorage.ref(`images/${mmyy}-${_room}`).put(base64);
+      url = await firestorage
+        .refFromURL(`gs://psu-edrom-ac538.appspot.com/images/${mmyy}-${_room}`)
+        .getDownloadURL();
+    }
+
+    const data = {
+      room: _room,
+      unit: unit * 1,
+      cash: 0,
+      payment: mmyy,
+      date: ddmmyy,
+      image: url,
+    };
+
     if (result.length > 0) {
       data.cash = Math.abs(unit - result[0].unit) * 5;
     }
@@ -126,6 +131,7 @@ const Agent = () => {
         console.log(err);
         return false;
       });
+
     return true;
   };
 
@@ -344,7 +350,7 @@ const Agent = () => {
                   const res = await createBillList();
                   if (res) {
                     alert("บันทึกข้อมูลสำเร็จ");
-                    window.location.reload();
+                    // window.location.reload();
                   } else {
                     alert("error ! : โปรดลองใหม่อีกครั้ง");
                   }
@@ -392,9 +398,10 @@ const Agent = () => {
 
                     let file = event.target.files[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onload = _handleReaderLoaded
-                      reader.readAsBinaryString(file)
+                      setBase64(file);
+                      // const reader = new FileReader();
+                      // reader.onload = _handleReaderLoaded
+                      // reader.readAsBinaryString(file)
                     }
 
                     console.log(picRef.current);
@@ -431,7 +438,6 @@ const Agent = () => {
                     console.log(unitRef.current);
                     console.log(res.data["msg"]);
                     if (res.data["msg"] == "success!!") {
-                      // alert(res.data["msg"]);
                       setscanstatus(!scanstatus);
                       setloadmodal(false);
                       toggle();
