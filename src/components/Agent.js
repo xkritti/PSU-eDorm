@@ -350,7 +350,7 @@ const Agent = () => {
                   const res = await createBillList();
                   if (res) {
                     alert("บันทึกข้อมูลสำเร็จ");
-                    // window.location.reload();
+                    window.location.reload();
                   } else {
                     alert("error ! : โปรดลองใหม่อีกครั้ง");
                   }
@@ -399,19 +399,16 @@ const Agent = () => {
                     let file = event.target.files[0];
                     if (file) {
                       setBase64(file);
-                      // const reader = new FileReader();
-                      // reader.onload = _handleReaderLoaded
-                      // reader.readAsBinaryString(file)
                     }
 
                     console.log(picRef.current);
-                    var date = picRef.current.lastModifiedDate;
+                    var date = new Date()
                     var year = date.getFullYear();
                     var month = date.getMonth();
                     var day = date.getDate();
-                    setdatescan(`${year}-${month + 1}-${day}`);
-                    setdate(`${year}-${month + 1}-${day}`);
-                    console.log(`${year}-${month + 1}-${day}`);
+                    setdatescan(`${year}-${month + 1 < 10 ? `0${month + 1}` :month + 1}-${day}`);
+                    setdate(`${year}-${month + 1 < 10 ? `0${month + 1}` :month + 1}-${day}`);
+                    console.log(`${year}-${month + 1 < 10 ? `0${month + 1}` :month + 1}-${day}`);
 
                     console.log(picRef.current.name);
                     var db = new FormData();

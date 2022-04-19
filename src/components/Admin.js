@@ -275,8 +275,8 @@ const Admin = () => {
                     (doc) => doc.payment == `${payment_mm}-${payment_date[1]}`
                   );
                   let ans;
-                  console.log("result", result[0].unit);
 
+                
                   console.log("dataUnitChange.current", dataUnitChange.current);
                   console.log("dataCashChange.current", dataCashChange.current);
 
@@ -284,7 +284,7 @@ const Admin = () => {
                   if (cashChange == 0 && unitChange != 0) {
                     if (result.length > 0) {
                       console.log("have data before");
-                      ans = Math.abs(unitChange - result[0].unit);
+                      ans = Math.abs(result[0] != undefined ? unitChange - result[0].unit:0);
                       console.log(ans);
                       setCashChange(ans * 5);
                     }
@@ -297,7 +297,7 @@ const Admin = () => {
                       "=>>",
                       parseInt(roomdata["unit"])
                     );
-                    setUnitChange(parseInt(roomdata["unit"]));
+                      setUnitChange( parseInt(roomdata["unit"]));
                   }
                   console.log(dataUnitChange.current);
                   await firestore
